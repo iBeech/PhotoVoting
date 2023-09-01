@@ -1,0 +1,12 @@
+﻿@model PhotoVotingApp.Models.Photo
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="photo">
+    <img src="@Url.Content("~/uploads/" + Model.ImageFileName)" alt="@Model.Title" width="300" height="auto" />
+    <h4>@Model.Title</h4>
+    <p>Votes: @Model.Votes</p>
+    <form asp-controller="Photo" asp-action="Vote" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit">Vote</button>
+    </form>
+</div>

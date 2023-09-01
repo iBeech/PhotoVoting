@@ -1,0 +1,105 @@
+﻿@model List<PhotoVotingApp.Models.Photo>
+
+<h2>Admin Page</h2>
+<br />
+
+<div class="mb-4">
+    <a class="btn btn-danger" asp-controller="Admin" asp-action="DeleteAllPhotos">Delete All Photos</a>
+
+    @if (!Model.All(p => p.Votes == 0))
+    {
+        <a class="btn btn-danger" asp-controller="Admin" asp-action="ResetVotes">Reset All Votes</a>
+    }
+</div>
+
+
+<h3>Photo List</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Photo Preview</th>
+            <th>Photo Title</th>
+            <th>Author</th>
+            <th>Votes</th>
+            <th>Actions</th> <!-- Add the "Delete" column -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var photo in Model)
+        {
+            <tr>
+                <td>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#photoModal-@photo.ImageFileName">
+                        <img src="~/uploads/@photo.ImageFileName" alt="@photo.Title" class="img-thumbnail" style="max-width: 100px; max-height: 100px;" />
+                    </a>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="photoModal-@photo.ImageFileName" tabindex="-1" aria-labelledby="photoModalLabel-@photo.Title" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="photoModalLabel-@photo.Title">@photo.Title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="~/uploads/@photo.ImageFileName" alt="@photo.Title" class="img-fluid" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <form asp-controller="Admin" asp-action="Update" method="post">
+                        <input type="hidden" name="id" value="@photo.Id" />
+                        <input type="text" name="title" value="@photo.Title" class="form-control" />
+
+                        <!-- Add a class and inline style for the Update button -->
+                        <button type="submit" class="btn btn-primary small-vertical-gap update-button" style="display: none;">Update</button>
+                    </form>
+                </td>
+                <td>
+                    <form asp-controller="Admin" asp-action="Update" method="post">
+                        <input type="hidden" name="id" value="@photo.Id" />
+                        <input type="text" name="author" value="@photo.Author" class="form-control" />
+
+                        <!-- Add a class and inline style for the Update button -->
+                        <button type="submit" class="btn btn-primary small-vertical-gap update-button" style="display: none;">Update</button>
+                    </form>
+                </td>
+                <td>@photo.Votes</td>
+                <td>
+                    <div class="btn-group">
+                        <form asp-controller="Admin" asp-action="Delete" method="post">
+                            <input type="hidden" name="id" value="@photo.Id" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                        @if (photo.Votes > 0)
+                        {
+                            <form asp-controller="Admin" asp-action="ResetPhotoVotes" method="post">
+                                <input type="hidden" name="id" value="@photo.Id" />
+                                <button type="submit" class="btn btn-danger" style="margin-left: 5px;">Reset Votes</button>
+                            </form>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    // Select all input fields with the class 'form-control'
+    const inputFields = document.querySelectorAll('.form-control');
+
+    // Select all buttons with the class 'update-button'
+    const updateButtons = document.querySelectorAll('.update-button');
+
+    // Add a focus event listener to each input field
+    inputFields.forEach((input, index) => {
+        input.addEventListener('focus', () => {
+            // When an input field gains focus, show the corresponding "Update" button
+            updateButtons[index].style.display = 'inline-block';
+        });
+    });
+</script>

@@ -1,0 +1,61 @@
+﻿@model List<PhotoVotingApp.Models.Photo>
+<link rel="stylesheet" href="~/css/site.css" />
+
+@if (Model.Count > 0)
+{
+    <h2 class="d-flex justify-content-between align-items-center">
+        @if (Context.Request.Cookies.ContainsKey("HasVoted"))
+        {
+            var votedPhotoId = Context.Request.Cookies["HasVoted"];
+            <form asp-controller="Photo" asp-action="ResetVote" method="post">
+                <input type="hidden" name="votedPhotoId" value="@votedPhotoId" />
+                <button type="submit" class="btn btn-danger ms-2">Reset Vote</button>
+            </form>
+        }
+    </h2>
+
+    <div class="photo-grid">
+
+        @foreach (var photo in Model)
+        {
+            <div class="photo">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#photoModal-@photo.ImageFileName">
+                    <img src="@Url.Content("~/uploads/" + photo.ImageFileName)" alt="@photo.Title" width="300" height="auto" />
+                </a>
+
+                <div class="photo-content">
+                    <h4>@photo.Title</h4>
+
+                    @if (!Context.Request.Cookies.ContainsKey("HasVoted"))
+                    {
+                        <form asp-controller="Photo" asp-action="Vote" method="post">
+                            <input type="hidden" name="id" value="@photo.Id" />
+                            <button type="submit" class="btn btn-primary small-vertical-gap">Vote</button>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="photoModal-@photo.ImageFileName" tabindex="-1" aria-labelledby="photoModalLabel-@photo.Title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="photoModalLabel-@photo.Title">@photo.Title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="@Url.Content("~/uploads/" + photo.ImageFileName)" alt="@photo.Title" class="img-fluid" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div>
+        <h1>Welcome, there are no photos yet!</h1>
+    </div>
+}
